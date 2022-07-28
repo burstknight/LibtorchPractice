@@ -3,7 +3,8 @@
 ------------
 ## [Unrelease]
 ### [Added]
-- Add an simple example `tensorEye` to create eye tensor.
+- Add a simple example `tensorEye` to create eye tensor.
+- Add an example `simpleNet` to show how to create a network.
 
 ### [Changed]
 
