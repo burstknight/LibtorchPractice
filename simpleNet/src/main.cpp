@@ -27,10 +27,16 @@ int main(){
 	cout << "\n";
 	showNamedParameter(oParameterNet);
 
+	cout << "\nForward:\n";
+	cout << oParameterNet.forward(torch::ones({2, 4})) << "\n";
+
 	cout << "\n============== SubmoduleNet ==============\n";
 	showParameter(oSubmoduleNet);
 	cout << "\n";
 	showNamedParameter(oSubmoduleNet);
+
+	cout << "\nForward:\n";
+	cout << oSubmoduleNet.forward(torch::ones({2, 4})) << "\n";
 
 	return 0;
 } // End of main

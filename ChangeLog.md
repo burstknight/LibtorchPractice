@@ -7,6 +7,7 @@
 - Add an example `simpleNet` to show how to create a network.
 
 ### [Changed]
+- Update the example `simpleNet` to run network forward.
 
 ### [Fixed]
 
