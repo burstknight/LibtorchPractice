@@ -1,6 +1,13 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c,c++,vim,visualstudiocode,visualstudio,python,linux,java
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,vim,visualstudiocode,visualstudio,python,linux,java
 
+# skip dataset
+dataset/*
+
+# skip model files
+*.pt
+*.pth
+
 ### C ###
 # Prerequisites
 *.d

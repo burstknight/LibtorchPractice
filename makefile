@@ -14,11 +14,13 @@ debug ?= 0
 all: 
 	cd ./tensorEye; $(MAKE) debug=$(debug)
 	cd ./simpleNet; $(MAKE) debug=$(debug)
+	cd ./dcgan_strurct; $(MAKE) debug=$(debug)
 
 
 # Clean all compiled files.
 clean:
 	cd ./tensorEye; $(MAKE) clean
 	cd ./simpleNet; $(MAKE) clean
+	cd ./dcgan_strurct; $(MAKE) clean
 
 
