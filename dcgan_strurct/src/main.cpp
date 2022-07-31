@@ -115,6 +115,7 @@ void train(const TrainParams *pParams){
 
 
 	if(pParams->isResume){
+		printf("Loading previous checkpoint...");
 		sprintf(buffer, "%s/generator-checkpoint.pt", pParams->pcModelFolder);
 		torch::load(poGeneratorNet, buffer);
 		sprintf(buffer, "%s/generator-optimizer-checkpoint.pt", pParams->pcModelFolder);
@@ -123,6 +124,7 @@ void train(const TrainParams *pParams){
 		torch::load(poDiscriminator, buffer);
 		sprintf(buffer, "%s/discrimator-optimizer-checkpoint.pt", pParams->pcModelFolder);
 		torch::load(oDiscriminatorOptimizer, buffer);
+		printf(" Done!\n");
 	} // End of if-conditon
 
 	unsigned long uiCheckpointCounter = 1;
@@ -160,28 +162,29 @@ void train(const TrainParams *pParams){
 
 			if(iBatchIndex % pParams->iLogInterval == 0){
 				printf("[%2d/%2d][%3lu/%3lu] D_loss: %.6f | G_loss: %.6f\n", i, pParams->iNumOfEpochs,
-						++iBatchIndex, uiBatchSizePerEpochs,
+						iBatchIndex, uiBatchSizePerEpochs,
 						tTotalLoss.item<float>(), tGenLoss.item<float>());
 			} // End of if-conditon
+
+			if(iBatchIndex % pParams->iCheckPoint == 0){
+				// Checkpoint the model and optimizer state
+				sprintf(buffer, "%s/generator-checkpoint.pt", pParams->pcModelFolder);
+				torch::save(poGeneratorNet, buffer);
+				sprintf(buffer, "%s/generator-optimizer-checkpoint.pt", pParams->pcModelFolder);
+				torch::save(oGeneratorOptimizer, buffer);
+				sprintf(buffer, "%s/discrimator-checkpoint.pt", pParams->pcModelFolder);
+				torch::save(poDiscriminator, buffer);
+				sprintf(buffer, "%s/discrimator-optimizers-checkpoint.pt", pParams->pcModelFolder);
+				torch::save(oDiscriminatorOptimizer, buffer);
+
+				// Sample the generator and save the images
+				torch::Tensor tSamples = poGeneratorNet->forward(torch::randn({pParams->iNumOfSamplesPerCheckPoint, pParams->iNoiseSize, 1, 1}));
+				torch::save((tSamples + 1.0)/2.0, torch::str("dcfan-sample-", uiCheckpointCounter, "pt"));
+				printf("\n-> checkpoint %ld\n", uiCheckpointCounter);
+			} // End of if-condition
+
+			iBatchIndex++;
 		} // End of for-loop
-
-		if(iBatchIndex % pParams->iCheckPoint == 0){
-			// Checkpoint the model and optimizer state
-			sprintf(buffer, "%s/generator-checkpoint.pt", pParams->pcModelFolder);
-			torch::save(poGeneratorNet, buffer);
-			sprintf(buffer, "%s/generator-optimizer-checkpoint.pt", pParams->pcModelFolder);
-			torch::save(oGeneratorOptimizer, buffer);
-			sprintf(buffer, "%s/discrimator-checkpoint.pt", pParams->pcModelFolder);
-			torch::save(poDiscriminator, buffer);
-			sprintf(buffer, "%s/discrimator-optimizers-checkpoint.pt", pParams->pcModelFolder);
-			torch::save(oDiscriminatorOptimizer, buffer);
-
-			// Sample the generator and save the images
-			torch::Tensor tSamples = poGeneratorNet->forward(torch::randn({pParams->iNumOfSamplesPerCheckPoint, pParams->iNoiseSize, 1, 1}));
-			torch::save((tSamples + 1.0)/2.0, torch::str("dcfan-sample-", uiCheckpointCounter, "pt"));
-			printf("\n-> checkpoint %ld\n", uiCheckpointCounter);
-		}
-
 	} // End of for-loop
 
 	printf("Training complete!\n");
