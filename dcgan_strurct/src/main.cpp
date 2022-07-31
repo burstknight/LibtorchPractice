@@ -204,7 +204,7 @@ void initTrainingParams(TrainParams *pParams){
 
 int parseArgs(int argc, char **argv, TrainParams *pParams){
 	while(1){
-	int iArgs = getopt(argc, argv, "h");	
+	int iArgs = getopt(argc, argv, "hn:b:e:d:m:c:r:s:l:");	
 	if(-1 == iArgs)
 		break;
 
