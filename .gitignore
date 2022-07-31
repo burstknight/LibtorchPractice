@@ -5,7 +5,7 @@
 dataset/*
 
 # skip model files
-*.pt
+*pt
 *.pth
 
 ### C ###

@@ -179,8 +179,10 @@ void train(const TrainParams *pParams){
 
 				// Sample the generator and save the images
 				torch::Tensor tSamples = poGeneratorNet->forward(torch::randn({pParams->iNumOfSamplesPerCheckPoint, pParams->iNoiseSize, 1, 1}));
-				torch::save((tSamples + 1.0)/2.0, torch::str("dcfan-sample-", uiCheckpointCounter, "pt"));
+				sprintf(buffer, "%s/dcfan-sample-%lupt", uiCheckpointCounter);
+				torch::save((tSamples + 1.0)/2.0, buffer);
 				printf("\n-> checkpoint %ld\n", uiCheckpointCounter);
+				uiCheckpointCounter++;
 			} // End of if-condition
 
 			iBatchIndex++;
