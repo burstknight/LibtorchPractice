@@ -1,32 +1,6 @@
 #include "../includes/header.h"
 #include "../includes/DCGANGenerator.h"
-#include <bits/getopt_core.h>
-#include <cstdlib>
 #include <unistd.h>
-#include "ATen/Context.h"
-#include "ATen/Functions.h"
-#include "ATen/TensorUtils.h"
-#include "ATen/core/TensorBody.h"
-#include "ATen/ops/binary_cross_entropy.h"
-#include "ATen/ops/randn.h"
-#include "c10/core/Device.h"
-#include "c10/core/DeviceType.h"
-#include "c10/util/StringUtil.h"
-#include "torch/cuda.h"
-#include "torch/data/dataloader.h"
-#include "torch/data/datasets/mnist.h"
-#include "torch/data/example.h"
-#include "torch/data/transforms/stack.h"
-#include "torch/data/transforms/tensor.h"
-#include "torch/nn/modules/activation.h"
-#include "torch/nn/modules/batchnorm.h"
-#include "torch/nn/modules/container/sequential.h"
-#include "torch/nn/modules/conv.h"
-#include "torch/nn/options/activation.h"
-#include "torch/nn/options/conv.h"
-#include "torch/optim/adam.h"
-#include "torch/serialize.h"
-#include "torch/serialize/input-archive.h"
 #include <cmath>
 #include <cstdio>
 #include <tuple>
@@ -121,7 +95,7 @@ void train(const TrainParams *pParams){
 		torch::nn::LeakyReLU(torch::nn::LeakyReLUOptions().negative_slope(0.2)),
 
 		// Layer 4
-		torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 1, 3).stride(1).padding(1).bias(false)),
+		torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 1, 3).stride(1).padding(0).bias(false)),
 		torch::nn::Sigmoid() );	
 
 
@@ -137,7 +111,7 @@ void train(const TrainParams *pParams){
 	torch::optim::Adam oGeneratorOptimizer(poGeneratorNet->parameters(), torch::optim::AdamOptions(2e-4).betas(std::make_tuple(0.5, 0.5)));
 	torch::optim::Adam oDiscriminatorOptimizer(poDiscriminator->parameters(), torch::optim::AdamOptions(5e-4).betas(std::make_tuple(0.5, 0.5)));
 
-	unsigned long uiBatchSizePerEpochs = std::ceil(poDataset.size().value()/(double)pParams->iBatchSize);
+	unsigned int uiBatchSizePerEpochs = std::ceil(poDataset.size().value()/static_cast<double>(pParams->iBatchSize));
 
 	if(pParams->isResume){
 		sprintf(buffer, "%s/generator-checkpoint.pt", pParams->pcModelFolder);
@@ -183,9 +157,11 @@ void train(const TrainParams *pParams){
 			tGenLoss.backward();
 			oGeneratorOptimizer.step();
 
-			printf("[%2ld/%2ld][%3ld/%3ld] D_loss: %.6f | G_loss: %.6f", i, pParams->iNumOfEpochs,
-					++iBatchIndex, uiBatchSizePerEpochs,
-					tTotalLoss.item<float>(), tGenLoss.item<float>());
+			if(iBatchIndex % pParams->iLogInterval == 0){
+				printf("[%2d/%2d][%3lu/%3lu] D_loss: %.6f | G_loss: %.6f\n", i, pParams->iNumOfEpochs,
+						++iBatchIndex, uiBatchSizePerEpochs,
+						tTotalLoss.item<float>(), tGenLoss.item<float>());
+			} // End of if-conditon
 		} // End of for-loop
 
 		if(iBatchIndex % pParams->iCheckPoint == 0){
@@ -244,7 +220,7 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			printf("\t-s:\tHow many images to sample at every checkpoint.\n");
 			printf("\t-l:\tSet to log a new update with the loss value.\n");
 			printf("\t-h:\tShow the usage of this program.\n");
-			break;
+			return -1;
 		case 'b':
 			pParams->iBatchSize = atoi(optarg);
 			break;

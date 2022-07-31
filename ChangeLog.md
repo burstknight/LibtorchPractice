@@ -11,6 +11,7 @@
 - Update the example `simpleNet` to run network forward.
 
 ### [Fixed]
+- Fixed the dimension error for the example `dcgan_struct`.
 
 ### [Removed]
 
