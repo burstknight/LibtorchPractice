@@ -12,6 +12,7 @@
 
 ### [Fixed]
 - Fixed the dimension error for the example `dcgan_struct`.
+- Fixed the bug that cannot get the iteration number per batches for the example `dcgan_struct`
 
 ### [Removed]
 

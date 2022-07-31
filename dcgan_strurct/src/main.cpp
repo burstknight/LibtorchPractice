@@ -105,13 +105,14 @@ void train(const TrainParams *pParams){
 		.map(torch::data::transforms::Normalize<>(0.5, 0.5))
 		.map(torch::data::transforms::Stack<>());
 
+	unsigned int uiBatchSizePerEpochs = std::ceil(poDataset.size().value()/(1.0*pParams->iBatchSize));
+
 	auto poDataLoader = torch::data::make_data_loader(std::move(poDataset), 
 			torch::data::DataLoaderOptions().batch_size(pParams->iBatchSize).workers(2));
 
 	torch::optim::Adam oGeneratorOptimizer(poGeneratorNet->parameters(), torch::optim::AdamOptions(2e-4).betas(std::make_tuple(0.5, 0.5)));
 	torch::optim::Adam oDiscriminatorOptimizer(poDiscriminator->parameters(), torch::optim::AdamOptions(5e-4).betas(std::make_tuple(0.5, 0.5)));
 
-	unsigned int uiBatchSizePerEpochs = std::ceil(poDataset.size().value()/static_cast<double>(pParams->iBatchSize));
 
 	if(pParams->isResume){
 		sprintf(buffer, "%s/generator-checkpoint.pt", pParams->pcModelFolder);
