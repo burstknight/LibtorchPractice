@@ -22,5 +22,5 @@ make
 ## Examples
 I implemented three examples following this [web](https://pytorch.org/tutorials/advanced/cpp_frontend.html#). The examples are:
 * [tensorEye](./tensorEye/Readme.md): It is a simple example that generates an identity matrix and show on terminal.
-* [simpleNet](): It demostracted how to create a neural network by libtorch.
+* [simpleNet](./simpleNet/Readme.md): It demostracted how to create a neural network by libtorch.
 * [dcgan_struct](): It used GAN to demostract how to create a program to train a network.
