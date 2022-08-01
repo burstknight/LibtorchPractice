@@ -234,16 +234,16 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 	switch (iArgs) {
 		case 'h':
 			printf("dcgan_struct:\nThis program is implemented by libtorch to generate fake MNIST images with GAN.\nUsage:\n");
-			printf("\t-n:\tThe size of the noise vector fed to the generator for training.\n");
-			printf("\t-b:\tThe batch size for training model.\n");
-			printf("\t-e:\tThe number of the epoches for training.\n");
-			printf("\t-d:\tSet the directory to find the MNIST dataset.\n");
-			printf("\t-m:\tSet the directory to save model.\n");
-			printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically.\n");
-			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint.\n");
-			printf("\t-s:\tHow many images to sample at every checkpoint.\n");
-			printf("\t-l:\tSet to log a new update with the loss value.\n");
-			printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU.\n");
+			printf("\t-n:\tThe size of the noise vector fed to the generator for training. [Default value: 100]\n");
+			printf("\t-b:\tThe batch size for training model. [Default value: 64]\n");
+			printf("\t-e:\tThe number of the epoches for training. Default value: 30\n");
+			printf("\t-d:\tSet the directory to find the MNIST dataset. [Default value: './dataset']\n");
+			printf("\t-m:\tSet the directory to save model. Default value: ['./models']\n");
+			printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. [Default value: 200]\n");
+			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: 100]\n");
+			printf("\t-s:\tHow many images to sample at every checkpoint. [Default value: 100]\n");
+			printf("\t-l:\tSet to log a new update with the loss value. [Default value: 10]\n");
+			printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU. [Default value: -1]\n");
 			printf("\t-h:\tShow the usage of this program.\n");
 			return -1;
 		case 'b':
@@ -277,7 +277,7 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			break;
 			break;
 		default:
-			printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.", optopt);
+			printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.\n", optopt);
 			return  -1;
 	} // End of switch
 } // End of while-loop
