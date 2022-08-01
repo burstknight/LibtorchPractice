@@ -84,6 +84,9 @@ void train(const TrainParams *pParams){
 	char buffer[4096];
 	torch::manual_seed(1);
 	
+	// Set the device to train.
+	// If user want to train model on GPU and GPU is avalailable, 
+	// creating a struct to move all datum and models into GPU.
 	torch::Device device(torch::kCPU);
 	if(pParams->iDevice >= 0 && torch::cuda::is_available()){
 		printf("CUDA is available! Training on GPU.\n");
@@ -95,6 +98,7 @@ void train(const TrainParams *pParams){
 	DCGANGenerator poGeneratorNet(pParams->iNoiseSize);
 	poGeneratorNet->to(device);
 
+	// Create a network to evaluate the factuality of the fake images that are generate by GAN.
 	torch::nn::Sequential poDiscriminator(
 		// Layer 1
 		torch::nn::Conv2d(torch::nn::Conv2dOptions(1, 64, 4).stride(2).padding(1).bias(false)),
@@ -227,60 +231,60 @@ void initTrainingParams(TrainParams *pParams){
 
 int parseArgs(int argc, char **argv, TrainParams *pParams){
 	while(1){
-	int iArgs = getopt(argc, argv, "hn:b:e:d:m:c:r:s:l:v:");	
-	if(-1 == iArgs)
-		break;
+		int iArgs = getopt(argc, argv, "hn:b:e:d:m:c:r:s:l:v:");	
+		if(-1 == iArgs)
+			break;
 
-	switch (iArgs) {
-		case 'h':
-			printf("dcgan_struct:\nThis program is implemented by libtorch to generate fake MNIST images with GAN.\nUsage:\n");
-			printf("\t-n:\tThe size of the noise vector fed to the generator for training. [Default value: 100]\n");
-			printf("\t-b:\tThe batch size for training model. [Default value: 64]\n");
-			printf("\t-e:\tThe number of the epoches for training. Default value: 30\n");
-			printf("\t-d:\tSet the directory to find the MNIST dataset. [Default value: './dataset']\n");
-			printf("\t-m:\tSet the directory to save model. Default value: ['./models']\n");
-			printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. [Default value: 200]\n");
-			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: -1]\n");
-			printf("\t-s:\tHow many images to sample at every checkpoint. [Default value: 100]\n");
-			printf("\t-l:\tSet to log a new update with the loss value. [Default value: 10]\n");
-			printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU. [Default value: -1]\n");
-			printf("\t-h:\tShow the usage of this program.\n");
-			return -1;
-		case 'b':
-			pParams->iBatchSize = atoi(optarg);
-			break;
-		case 'n':
-			pParams->iNoiseSize = atoi(optarg);
-			break;
-		case 'e':
-			pParams->iNumOfEpochs = atoi(optarg);
-			break;
-		case 'd':
-			sprintf(pParams->pcDatasetFolder, "%s", optarg);
-			break;
-		case 'm':
-			sprintf(pParams->pcModelFolder, "%s", optarg);
-			break;
-		case 'c':
-			pParams->iCheckPoint = atoi(optarg);
-			break;
-		case 'r':
-			pParams->isResume = atoi(optarg) > 0 ? true : false;
-			break;
-		case 's':
-			pParams->iNumOfSamplesPerCheckPoint = atoi(optarg);
-			break;
-		case 'l':
-			pParams->iLogInterval = atoi(optarg);
-			break;
-		case 'v':
-			pParams->iDevice = atoi(optarg);
-			break;
-		default:
-			printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.\n", optopt);
-			return  -1;
-	} // End of switch
-} // End of while-loop
+		switch (iArgs) {
+			case 'h':
+				printf("dcgan_struct:\nThis program is implemented by libtorch to generate fake MNIST images with GAN.\nUsage:\n");
+				printf("\t-n:\tThe size of the noise vector fed to the generator for training. [Default value: 100]\n");
+				printf("\t-b:\tThe batch size for training model. [Default value: 64]\n");
+				printf("\t-e:\tThe number of the epoches for training. Default value: 30\n");
+				printf("\t-d:\tSet the directory to find the MNIST dataset. [Default value: './dataset']\n");
+				printf("\t-m:\tSet the directory to save model. Default value: ['./models']\n");
+				printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. [Default value: 200]\n");
+				printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: -1]\n");
+				printf("\t-s:\tHow many images to sample at every checkpoint. [Default value: 100]\n");
+				printf("\t-l:\tSet to log a new update with the loss value. [Default value: 10]\n");
+				printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU. [Default value: -1]\n");
+				printf("\t-h:\tShow the usage of this program.\n");
+				return -1;
+			case 'b':
+				pParams->iBatchSize = atoi(optarg);
+				break;
+			case 'n':
+				pParams->iNoiseSize = atoi(optarg);
+				break;
+			case 'e':
+				pParams->iNumOfEpochs = atoi(optarg);
+				break;
+			case 'd':
+				sprintf(pParams->pcDatasetFolder, "%s", optarg);
+				break;
+			case 'm':
+				sprintf(pParams->pcModelFolder, "%s", optarg);
+				break;
+			case 'c':
+				pParams->iCheckPoint = atoi(optarg);
+				break;
+			case 'r':
+				pParams->isResume = atoi(optarg) > 0 ? true : false;
+				break;
+			case 's':
+				pParams->iNumOfSamplesPerCheckPoint = atoi(optarg);
+				break;
+			case 'l':
+				pParams->iLogInterval = atoi(optarg);
+				break;
+			case 'v':
+				pParams->iDevice = atoi(optarg);
+				break;
+			default:
+				printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.\n", optopt);
+				return  -1;
+			} // End of switch
+	} // End of while-loop
 
 	return 0;
 } // End of parseArgs
