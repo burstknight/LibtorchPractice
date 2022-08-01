@@ -240,7 +240,7 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			printf("\t-d:\tSet the directory to find the MNIST dataset. [Default value: './dataset']\n");
 			printf("\t-m:\tSet the directory to save model. Default value: ['./models']\n");
 			printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. [Default value: 200]\n");
-			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: 100]\n");
+			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: -1]\n");
 			printf("\t-s:\tHow many images to sample at every checkpoint. [Default value: 100]\n");
 			printf("\t-l:\tSet to log a new update with the loss value. [Default value: 10]\n");
 			printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU. [Default value: -1]\n");
@@ -272,9 +272,9 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			break;
 		case 'l':
 			pParams->iLogInterval = atoi(optarg);
+			break;
 		case 'v':
 			pParams->iDevice = atoi(optarg);
-			break;
 			break;
 		default:
 			printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.\n", optopt);
