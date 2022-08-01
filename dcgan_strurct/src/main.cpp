@@ -1,5 +1,8 @@
 #include "../includes/header.h"
 #include "../includes/DCGANGenerator.h"
+#include "c10/core/Device.h"
+#include "c10/core/DeviceType.h"
+#include "torch/cuda.h"
 #include <unistd.h>
 #include <cmath>
 #include <cstdio>
@@ -32,6 +35,9 @@ struct TrainParams{
 	// Set to `true` to restore models and optimizers from previously saved
 	// checkpoints
 	bool isResume;
+
+	// Set to `-1` to use CPU for training.
+	int iDevice;
 
 	// After how many batches to log a new update with the loss value
 	unsigned int iLogInterval;
@@ -77,7 +83,17 @@ int main(int argc, char **argv){
 void train(const TrainParams *pParams){
 	char buffer[4096];
 	torch::manual_seed(1);
+	
+	torch::Device device(torch::kCPU);
+	if(pParams->iDevice >= 0 && torch::cuda::is_available()){
+		printf("CUDA is available! Training on GPU.\n");
+		device = torch::Device(torch::kCUDA);
+		device.set_index(pParams->iDevice);
+	} // End of if-condition
+
+
 	DCGANGenerator poGeneratorNet(pParams->iNoiseSize);
+	poGeneratorNet->to(device);
 
 	torch::nn::Sequential poDiscriminator(
 		// Layer 1
@@ -97,6 +113,7 @@ void train(const TrainParams *pParams){
 		// Layer 4
 		torch::nn::Conv2d(torch::nn::Conv2dOptions(256, 1, 3).stride(1).padding(0).bias(false)),
 		torch::nn::Sigmoid() );	
+	poDiscriminator->to(device);
 
 
 	/* Loading MNIST dataset for trainig
@@ -135,16 +152,16 @@ void train(const TrainParams *pParams){
 		for(torch::data::Example<> &oBatchExample : *poDataLoader){
 			// Train MNIST detector with real images
 			poDiscriminator->zero_grad();
-			torch::Tensor tRealImages = oBatchExample.data;
-			torch::Tensor tRealLabel = torch::empty(oBatchExample.data.size(0)).uniform_(0.8, 1.0);
+			torch::Tensor tRealImages = oBatchExample.data.to(device);
+			torch::Tensor tRealLabel = torch::empty(oBatchExample.data.size(0), device).uniform_(0.8, 1.0);
 			torch::Tensor tRealOutput = poDiscriminator->forward(tRealImages);
 			torch::Tensor tLossReal = torch::binary_cross_entropy(tRealOutput, tRealLabel);
 			tLossReal.backward();
 
 			// Train MNIST detector with fake images
-			torch::Tensor tNoise = torch::randn({oBatchExample.data.size(0), pParams->iNoiseSize, 1, 1});
+			torch::Tensor tNoise = torch::randn({oBatchExample.data.size(0), pParams->iNoiseSize, 1, 1}, device);
 			torch::Tensor tFakeImages = poGeneratorNet->forward(tNoise);
-			torch::Tensor tFakeLabels = torch::zeros(oBatchExample.data.size(0));
+			torch::Tensor tFakeLabels = torch::zeros(oBatchExample.data.size(0), device);
 			torch::Tensor tFakeOutput = poDiscriminator->forward(tFakeImages.detach());
 			torch::Tensor tLossFake = torch::binary_cross_entropy(tFakeOutput, tFakeLabels);
 			tLossFake.backward();
@@ -200,6 +217,7 @@ void initTrainingParams(TrainParams *pParams){
 	pParams->iCheckPoint = 200;
 	pParams->iLogInterval = 10;
 	pParams->iNumOfSamplesPerCheckPoint = 10;
+	pParams->iDevice = -1;
 	pParams->pcModelFolder = (char*)malloc(sizeof(char)*4096);
 	pParams->pcDatasetFolder = (char*)malloc(sizeof(char)*4096);
 
@@ -209,7 +227,7 @@ void initTrainingParams(TrainParams *pParams){
 
 int parseArgs(int argc, char **argv, TrainParams *pParams){
 	while(1){
-	int iArgs = getopt(argc, argv, "hn:b:e:d:m:c:r:s:l:");	
+	int iArgs = getopt(argc, argv, "hn:b:e:d:m:c:r:s:l:v:");	
 	if(-1 == iArgs)
 		break;
 
@@ -225,6 +243,7 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint.\n");
 			printf("\t-s:\tHow many images to sample at every checkpoint.\n");
 			printf("\t-l:\tSet to log a new update with the loss value.\n");
+			printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU.\n");
 			printf("\t-h:\tShow the usage of this program.\n");
 			return -1;
 		case 'b':
@@ -253,6 +272,9 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 			break;
 		case 'l':
 			pParams->iLogInterval = atoi(optarg);
+		case 'v':
+			pParams->iDevice = atoi(optarg);
+			break;
 			break;
 		default:
 			printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.", optopt);

@@ -9,6 +9,7 @@
 
 ### [Changed]
 - Update the example `simpleNet` to run network forward.
+- Update the example `dcgan_struct` to support GPU for training.
 
 ### [Fixed]
 - Fixed the dimension error for the example `dcgan_struct`.
