@@ -191,7 +191,7 @@ void train(const TrainParams *pParams){
 				torch::save(oGeneratorOptimizer, buffer);
 				sprintf(buffer, "%s/discrimator-checkpoint.pt", pParams->pcModelFolder);
 				torch::save(poDiscriminator, buffer);
-				sprintf(buffer, "%s/discrimator-optimizers-checkpoint.pt", pParams->pcModelFolder);
+				sprintf(buffer, "%s/discrimator-optimizer-checkpoint.pt", pParams->pcModelFolder);
 				torch::save(oDiscriminatorOptimizer, buffer);
 
 				// Sample the generator and save the images
