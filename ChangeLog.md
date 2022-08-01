@@ -16,6 +16,7 @@
 - Fixed the bug that the example `dcgan_struct` could not parse arguments from user.
 - Fixed the bug that the training flow is wrong for the example `dcgan_struct`.
 - Fixed the bug that the example `dcgan_struct` would save the samples into wrong path at every checkpoint.
+- Fixed the bug that the example `dcgan_struct` could not save the samples at every checkpoint.
 
 ### [Removed]
 
