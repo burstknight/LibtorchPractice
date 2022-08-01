@@ -154,7 +154,7 @@ void train(const TrainParams *pParams){
 			poDiscriminator->zero_grad();
 			torch::Tensor tRealImages = oBatchExample.data.to(device);
 			torch::Tensor tRealLabel = torch::empty(oBatchExample.data.size(0), device).uniform_(0.8, 1.0);
-			torch::Tensor tRealOutput = poDiscriminator->forward(tRealImages);
+			torch::Tensor tRealOutput = poDiscriminator->forward(tRealImages).reshape({oBatchExample.data.size(0)});
 			torch::Tensor tLossReal = torch::binary_cross_entropy(tRealOutput, tRealLabel);
 			tLossReal.backward();
 
@@ -162,7 +162,7 @@ void train(const TrainParams *pParams){
 			torch::Tensor tNoise = torch::randn({oBatchExample.data.size(0), pParams->iNoiseSize, 1, 1}, device);
 			torch::Tensor tFakeImages = poGeneratorNet->forward(tNoise);
 			torch::Tensor tFakeLabels = torch::zeros(oBatchExample.data.size(0), device);
-			torch::Tensor tFakeOutput = poDiscriminator->forward(tFakeImages.detach());
+			torch::Tensor tFakeOutput = poDiscriminator->forward(tFakeImages.detach()).reshape({oBatchExample.data.size(0)});
 			torch::Tensor tLossFake = torch::binary_cross_entropy(tFakeOutput, tFakeLabels);
 			tLossFake.backward();
 
@@ -172,7 +172,7 @@ void train(const TrainParams *pParams){
 			// Train generator
 			poGeneratorNet->zero_grad();
 			tFakeLabels.fill_(1);
-			tFakeOutput = poDiscriminator->forward(tFakeImages);
+			tFakeOutput = poDiscriminator->forward(tFakeImages).reshape({oBatchExample.data.size(0)});
 			torch::Tensor tGenLoss = torch::binary_cross_entropy(tFakeOutput, tFakeLabels);
 			tGenLoss.backward();
 			oGeneratorOptimizer.step();
