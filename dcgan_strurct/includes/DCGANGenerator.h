@@ -23,7 +23,8 @@ struct DCGANGeneratorImpl: torch::nn::Module{
 			register_module("batch_norm1", batch_norm1);
 			register_module("conv2", conv2);
 			register_module("batch_norm2", batch_norm2);
-			register_module("conv3", batch_norm3);
+			register_module("conv3", conv3);
+			register_module("batch_norm3", batch_norm3);
 			register_module("conv4", conv4);
 	} // constructor
 

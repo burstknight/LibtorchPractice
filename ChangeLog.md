@@ -20,6 +20,7 @@
 - Fixed the bug that the example `dcgan_struct` would save the samples into wrong path at every checkpoint.
 - Fixed the bug that the example `dcgan_struct` could not save the samples at every checkpoint.
 - Fixed the bug that the example `dcgan_struct` could not resume previous checkpoint.
+- Fixed the bug that the type of the samples is same as the type of the modules at every checkpoint for the example `dcgan_struct`.
 
 ### [Removed]
 
