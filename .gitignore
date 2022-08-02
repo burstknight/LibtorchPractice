@@ -7,6 +7,7 @@ dataset/*
 # skip model files
 *pt
 *.pth
+*.bmp
 
 ### C ###
 # Prerequisites

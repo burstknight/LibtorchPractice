@@ -2,12 +2,19 @@
 #include "../includes/DCGANGenerator.h"
 #include "c10/core/Device.h"
 #include "c10/core/DeviceType.h"
+#include "opencv2/core/hal/interface.h"
+#include "opencv2/imgcodecs.hpp"
 #include "torch/cuda.h"
+#include "torch/types.h"
+#include <cstring>
 #include <unistd.h>
 #include <cmath>
 #include <cstdio>
 #include <tuple>
 #include <utility>
+#include <opencv4/opencv2/opencv.hpp>
+
+using namespace cv;
 
 // Description: Store the parameters for training
 struct TrainParams{
@@ -200,9 +207,31 @@ void train(const TrainParams *pParams){
 
 				// Sample the generator and save the images
 				torch::Tensor tSamples = poGeneratorNet->forward(torch::randn({pParams->iNumOfSamplesPerCheckPoint, pParams->iNoiseSize, 1, 1}, device));
-				sprintf(buffer, "%s/dcfan-sample-%lupt", pParams->pcModelFolder, uiCheckpointCounter);
-				torch::save((tSamples + 1.0)/2.0, buffer);
-				printf("\n-> checkpoint %ld\n", uiCheckpointCounter);
+				tSamples = (tSamples + 1.0)/2.0;
+				tSamples = tSamples.mul(255).clamp(0, 255).to(torch::kU8);
+				tSamples = tSamples.to(torch::kCPU);
+				for(int j = 0; j < pParams->iNumOfSamplesPerCheckPoint; j++){
+					/* tSamples.size() can get its dimension
+					 * tSamples.size(0) is the number of the batches for the tensor.
+					 * tSamples.size(1) is the number of th channels for the tensor
+					 * tSamples.size(2) is the rows for the tensor.
+					 * tSamples.size(3) is the columns for the tensor.
+					 */
+
+					int iRows = tSamples.size(2);
+					int iCols = tSamples.size(3);
+					
+					// Convert tensor to cv::Mat.
+					Mat mSample(iCols, iRows, CV_8UC1);
+					std::memcpy((void*) mSample.data, 
+							(void*)((uchar*)tSamples.data_ptr() + iRows*iCols),  // This tensor has batches images, so must move pointer to split each images.
+							sizeof(torch::kU8)*iRows*iCols);
+
+					sprintf(buffer, "%s/dcfan-sample-%06lu_%04d.bmp", pParams->pcModelFolder, uiCheckpointCounter, j);
+					cv::imwrite(buffer, mSample);
+				} // End of for-loop
+
+				printf("\n-> checkpoint %06ld\n", uiCheckpointCounter);
 				uiCheckpointCounter++;
 			} // End of if-condition
 

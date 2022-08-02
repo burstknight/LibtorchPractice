@@ -17,8 +17,8 @@ File_Extension := cpp
 
 # Set compiler and flags.
 CC = g++
-CFLAGS = $(shell pkg-config --cflags libtorch)
-LIBS =  $(shell pkg-config --libs libtorch) -lpthread
+CFLAGS = $(shell pkg-config --cflags libtorch) $(shell pkg-config --cflags opencv4)
+LIBS =  $(shell pkg-config --libs libtorch) -lpthread $(shell pkg-config --libs opencv4)
 
 # List all source code in the src directory
 Sourcs := $(wildcard $(Sourc_Dir)/*.$(File_Extension))
