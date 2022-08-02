@@ -214,12 +214,12 @@ void train(const TrainParams *pParams){
 					/* tSamples.size() can get its dimension
 					 * tSamples.size(0) is the number of the batches for the tensor.
 					 * tSamples.size(1) is the number of th channels for the tensor
-					 * tSamples.size(2) is the rows for the tensor.
-					 * tSamples.size(3) is the columns for the tensor.
+					 * tSamples.size(2) is the columns for the tensor.
+					 * tSamples.size(3) is the rows for the tensor.
 					 */
 
-					int iRows = tSamples.size(2);
-					int iCols = tSamples.size(3);
+					int iCols = tSamples.size(2);
+					int iRows = tSamples.size(3);
 					
 					// Convert tensor to cv::Mat.
 					Mat mSample(iCols, iRows, CV_8UC1);

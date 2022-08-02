@@ -12,6 +12,7 @@
 - Update the example `dcgan_struct` to support GPU for training.
 - Update the example `dcgan_struct` to show more detail for usage.
 - Update the example `dcgan_struct` to convert the samples that are generated from GAN to images.
+- Update the example `dcgan_struct` because I misunderstood the dimensions of the tensor for libtorch.
 
 ### [Fixed]
 - Fixed the dimension error for the example `dcgan_struct`.
