@@ -3,6 +3,16 @@
 ------------
 ## [Unrelease]
 ### [Added]
+
+### [Changed]
+
+### [Fixed]
+
+### [Removed]
+
+------------
+## [1.0.0] - 2022/08/03
+### [Added]
 - Add a simple example `tensorEye` to create eye tensor.
 - Add an example `simpleNet` to show how to create a network.
 - Add an example `dcgan_struct` to show how to train a network with struct.
@@ -24,6 +34,4 @@
 - Fixed the bug that the example `dcgan_struct` could not resume previous checkpoint.
 - Fixed the bug that the type of the samples is same as the type of the modules at every checkpoint for the example `dcgan_struct`.
 - Fixed the bug thatt warning about `output not match` happened during training on GPU for the example `dcgan_struct`.
-
-### [Removed]
 
