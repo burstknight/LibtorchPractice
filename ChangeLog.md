@@ -3,6 +3,7 @@
 ------------
 ## [Unrelease]
 ### [Added]
+- Update the example `dcgan_struct` to use color to show the usage.
 
 ### [Changed]
 

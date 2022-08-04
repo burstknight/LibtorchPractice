@@ -266,17 +266,17 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 
 		switch (iArgs) {
 			case 'h':
-				printf("dcgan_struct:\nThis program is implemented by libtorch to generate fake MNIST images with GAN.\nUsage:\n");
-				printf("\t-n:\tThe size of the noise vector fed to the generator for training. [Default value: 100]\n");
-				printf("\t-b:\tThe batch size for training model. [Default value: 64]\n");
-				printf("\t-e:\tThe number of the epoches for training. Default value: 30\n");
-				printf("\t-d:\tSet the directory to find the MNIST dataset. [Default value: './dataset']\n");
-				printf("\t-m:\tSet the directory to save model. Default value: ['./models']\n");
-				printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. [Default value: 200]\n");
-				printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. [Default value: -1]\n");
-				printf("\t-s:\tHow many images to sample at every checkpoint. [Default value: 100]\n");
-				printf("\t-l:\tSet to log a new update with the loss value. [Default value: 10]\n");
-				printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', otherwise set the ID of GPU. [Default value: -1]\n");
+				printf("dcgan_struct:\nThis program is implemented by libtorch to generate fake MNIST images with GAN.\n\nUsage:\n");
+				printf("\t-n:\tThe size of the noise vector fed to the generator for training. \x1b[32m[Default value: 100]\x1b[0m\n");
+				printf("\t-b:\tThe batch size for training model. \x1b[32m[Default value: 64]\x1b[0m\n");
+				printf("\t-e:\tThe number of the epoches for training. \x1b[32mDefault value: 30\x1b[0m\n");
+				printf("\t-d:\tSet the directory to find the MNIST dataset. \x1b[32m[Default value: './dataset']\x1b[0m\n");
+				printf("\t-m:\tSet the directory to save model. Default value: \x1b[32m['./models']\x1b[0m\n");
+				printf("\t-c:\tSet it to how many epoches to create a new checkpoint periodically. \x1b[32m[Default value: 200]\x1b[0m\n");
+				printf("\t-r:\tSet to positive integer to restore training progress from previously checkpoint. \x1b[32m[Default value: -1]\x1b[0m\n");
+				printf("\t-s:\tHow many images to sample at every checkpoint. \x1b[32m[Default value: 100]\x1b[0m\n");
+				printf("\t-l:\tSet to log a new update with the loss value. \x1b[32m[Default value: 10]\x1b[0m\n");
+				printf("\t-v:\tSet the device to train. If you want to use CPU, you can set '-1', \n\t\totherwise set the ID of GPU. \x1b[32m[Default value: -1]\x1b[0m\n");
 				printf("\t-h:\tShow the usage of this program.\n");
 				return -1;
 			case 'b':
@@ -310,7 +310,7 @@ int parseArgs(int argc, char **argv, TrainParams *pParams){
 				pParams->iDevice = atoi(optarg);
 				break;
 			default:
-				printf("Error: The argument -%c is invalid! Please use '-h' to check the usage of this program.\n", optopt);
+				printf("\x1b[31mError: The argument -%c is invalid! Please use '-h' to check the usage of this program.\x1b[0m\n", optopt);
 				return  -1;
 			} // End of switch
 	} // End of while-loop
