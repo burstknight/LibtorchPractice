@@ -6,6 +6,7 @@
 #include "opencv2/imgcodecs.hpp"
 #include "torch/cuda.h"
 #include "torch/types.h"
+#include <boost/filesystem/operations.hpp>
 #include <cstring>
 #include <unistd.h>
 #include <cmath>
@@ -13,6 +14,7 @@
 #include <tuple>
 #include <utility>
 #include <opencv4/opencv2/opencv.hpp>
+#include <boost/filesystem.hpp>
 
 using namespace cv;
 
@@ -210,6 +212,12 @@ void train(const TrainParams *pParams){
 				tSamples = (tSamples + 1.0)/2.0;
 				tSamples = tSamples.mul(255).clamp(0, 255).to(torch::kU8);
 				tSamples = tSamples.to(torch::kCPU);
+				sprintf(buffer, "%s/dcgan_samples/checkpoint_%06lu", pParams->pcModelFolder, uiCheckpointCounter);
+				if(boost::filesystem::create_directories(buffer)){
+					printf("Create folder to store samples!");
+				} // End of if-conditon
+
+
 				for(int j = 0; j < pParams->iNumOfSamplesPerCheckPoint; j++){
 					/* tSamples.size() can get its dimension
 					 * tSamples.size(0) is the number of the batches for the tensor.
@@ -227,7 +235,7 @@ void train(const TrainParams *pParams){
 							(void*)((uchar*)tSamples.data_ptr() + iRows*iCols),  // This tensor has batches images, so must move pointer to split each images.
 							sizeof(torch::kU8)*iRows*iCols);
 
-					sprintf(buffer, "%s/dcfan-sample-%06lu_%04d.bmp", pParams->pcModelFolder, uiCheckpointCounter, j);
+					sprintf(buffer, "%s/dcgan_samples/checkpoint_%06lu/%04d.bmp", pParams->pcModelFolder, uiCheckpointCounter, j);
 					cv::imwrite(buffer, mSample);
 				} // End of for-loop
 
