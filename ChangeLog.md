@@ -8,6 +8,7 @@
 - Add the example `detect_mnist` to show how to build a network, dataset for training.
 	- Implement the class `myMnistDataset`:
 		* Implement the consturctor and `loadImages()`.
+		* Implement the method `loadLabels()` to load the labels for MNIST dataset.
 
 ### [Changed]
 

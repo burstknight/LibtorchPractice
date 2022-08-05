@@ -26,6 +26,8 @@ int myMnistDataset::loadImages(std::string sImagePath){
 
 	unsigned int iNumOfImages = 0;
 	unsigned int iRows, iCols;
+
+	// Skip the magic number
 	fseek(pFileReader, 4, SEEK_SET);
 
 	// Read the number of the images
@@ -43,7 +45,7 @@ int myMnistDataset::loadImages(std::string sImagePath){
 		
 		cv::Mat mImage(iCols, iRows, CV_8UC1);
 		std::memcpy((void*)mImage.data, (void*)pcBuffer, sizeof(unsigned char) * iRows * iCols);
-		m_vmImages.push_back(mImage);
+		m_vmImages[i] = mImage;
 	} // End of for-loop
 
 	free(pcBuffer);
@@ -53,4 +55,30 @@ int myMnistDataset::loadImages(std::string sImagePath){
 
 	return 0;
 } // End of myMnistDataset::loadImages
+
+int myMnistDataset::loadLabels(std::string sLabelsPath){
+	std::FILE *pFileReader = fopen(sLabelsPath.c_str(), "rb");	
+	if(NULL == pFileReader){
+		return -1;
+	} // End of if-condition
+
+	unsigned int iNumOfItems = 0;
+	unsigned char cLabel;
+
+	// Skip the magic number
+	fseek(pFileReader, 4, SEEK_SET);
+
+	// Read the number of the labels for the dataset
+	fread(&iNumOfItems, sizeof(unsigned int), 1, pFileReader);
+	m_viLabels.resize(iNumOfItems);
+
+	for(unsigned int i = 0; i < iNumOfItems; i++){
+		fread(&cLabel, sizeof(unsigned char), 1, pFileReader);	
+		m_viLabels[i] = cLabel;
+	} // End of for-loop
+
+	fclose(pFileReader);
+	pFileReader = NULL;
+	return 0;
+} // End of myMnistDataset:::loadLabels
 
