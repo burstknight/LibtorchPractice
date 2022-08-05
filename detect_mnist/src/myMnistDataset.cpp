@@ -1,5 +1,10 @@
 #include "../includes/myMnistDataset.h"
+#include "ATen/core/TensorBody.h"
+#include "ATen/ops/from_blob.h"
+#include "ATen/ops/full.h"
+#include "c10/core/ScalarType.h"
 #include "opencv2/core/hal/interface.h"
+#include "torch/data/example.h"
 #include "torch/types.h"
 #include <cstddef>
 #include <cstdio>
@@ -86,4 +91,14 @@ int myMnistDataset::loadLabels(std::string sLabelsPath){
 torch::optional<size_t> myMnistDataset::size() const{
 	return m_vmImages.size();	
 } // End of myMnistDataset::size
+
+torch::data::Example<> myMnistDataset::get(size_t index){
+	torch::Tensor tImage = torch::from_blob(m_vmImages[index].data, 
+			{m_vmImages[index].rows, m_vmImages[index].cols, 1}, torch::kByte)
+			.permute({2, 0, 1});	// convert cols*rows*channels to cols*rows*channels
+
+	torch::Tensor tLabel = torch::full({1}, m_viLabels[index]);
+
+	return {tImage.clone(), tLabel.clone()};
+} // End of myMnistDataset::get
 

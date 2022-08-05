@@ -10,6 +10,7 @@
 		* Implement the consturctor and `loadImages()`.
 		* Implement the method `loadLabels()` to load the labels for MNIST dataset.
 		* Implement the method `size()` to get the number of daum.
+		* Implement the method `get()` to obtain the data at the given index.
 
 ### [Changed]
 
