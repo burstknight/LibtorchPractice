@@ -9,6 +9,7 @@
 	- Implement the class `myMnistDataset`:
 		* Implement the consturctor and `loadImages()`.
 		* Implement the method `loadLabels()` to load the labels for MNIST dataset.
+		* Implement the method `size()` to get the number of daum.
 
 ### [Changed]
 

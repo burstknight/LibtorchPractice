@@ -1,5 +1,6 @@
 #include "../includes/myMnistDataset.h"
 #include "opencv2/core/hal/interface.h"
+#include "torch/types.h"
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -81,4 +82,8 @@ int myMnistDataset::loadLabels(std::string sLabelsPath){
 	pFileReader = NULL;
 	return 0;
 } // End of myMnistDataset:::loadLabels
+
+torch::optional<size_t> myMnistDataset::size() const{
+	return m_vmImages.size();	
+} // End of myMnistDataset::size
 
