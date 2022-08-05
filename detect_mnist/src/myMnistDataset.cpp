@@ -22,6 +22,10 @@ myMnistDataset::myMnistDataset(std::string sImagePath, std::string sLabelsPath){
 		throw std::runtime_error("Not found to load labels!");
 	} // End of if-condition
 
+	if((m_vmImages.size() != m_viLabels.size()) || (m_vmImages.size() * m_viLabels.size() <= 0)){
+		throw std::runtime_error("The number of the labels 'm_viLabels' != the number of the images 'm_vmImages' for the given dataset!");
+	} // End of if-condition
+
 } // End of constructor
 
 int myMnistDataset::loadImages(std::string sImagePath){

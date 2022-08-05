@@ -15,6 +15,7 @@
 ### [Changed]
 
 ### [Fixed]
+- Fixed the bug that the label file would be prepared for the image file in the consturctor of the class `myMnistDataset` for the example `detect_mnist`.
 
 ### [Removed]
 
