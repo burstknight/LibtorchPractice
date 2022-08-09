@@ -13,7 +13,7 @@
 #include <exception>
 #include <stdexcept>
 
-myMnistDataset::myMnistDataset(std::string sImagePath, std::string sLabelsPath){
+myMnistDataset::myMnistDataset(const std::string &sImagePath, const std::string &sLabelsPath){
 	if(0 != loadImages(sImagePath)){
 		throw std::runtime_error("Not found file to load images!");
 	} // End of if-condition
@@ -34,25 +34,36 @@ int myMnistDataset::loadImages(std::string sImagePath){
 		return -1;
 	} // End of if-condition
 
-	unsigned int iNumOfImages = 0;
-	unsigned int iRows, iCols;
+	int iNumOfImages = 0;
+	int iRows, iCols;
+	IntBuffer buffer;
 
+	int iMagic;
 	// Skip the magic number
 	fseek(pFileReader, 4, SEEK_SET);
 
+
 	// Read the number of the images
-	fread(&iNumOfImages, sizeof(unsigned int), 1, pFileReader);
+	fread(&(buffer.iData), sizeof(int), 1, pFileReader);
+	convertFormat(buffer);
+	iNumOfImages = buffer.iData;
 
 	// Read the rows and columns for each images
-	fread(&iRows, sizeof(unsigned int), 1, pFileReader);
-	fread(&iCols, sizeof(unsigned int), 1, pFileReader);
+	fread(&(buffer.iData), sizeof(int), 1, pFileReader);
+	convertFormat(buffer);
+	iRows = buffer.iData;
+
+	fread(&(buffer.iData), sizeof(int), 1, pFileReader);
+	convertFormat(buffer);
+	iCols = buffer.iData;
+
 
 	unsigned char *pcBuffer = (unsigned char*)malloc(sizeof(unsigned char) * iRows * iCols);
 	m_vmImages.resize(iNumOfImages);
 	
 	for(unsigned int i = 0; i < iNumOfImages; i++){
 		fread(pcBuffer, sizeof(unsigned char), iRows * iCols, pFileReader);	
-		
+
 		cv::Mat mImage(iCols, iRows, CV_8UC1);
 		std::memcpy((void*)mImage.data, (void*)pcBuffer, sizeof(unsigned char) * iRows * iCols);
 		m_vmImages[i] = mImage;
@@ -74,12 +85,15 @@ int myMnistDataset::loadLabels(std::string sLabelsPath){
 
 	unsigned int iNumOfItems = 0;
 	unsigned char cLabel;
+	IntBuffer buffer;
 
 	// Skip the magic number
 	fseek(pFileReader, 4, SEEK_SET);
 
 	// Read the number of the labels for the dataset
-	fread(&iNumOfItems, sizeof(unsigned int), 1, pFileReader);
+	fread(&(buffer.iData), sizeof(unsigned int), 1, pFileReader);
+	convertFormat(buffer);
+	iNumOfItems = buffer.iData;
 	m_viLabels.resize(iNumOfItems);
 
 	for(unsigned int i = 0; i < iNumOfItems; i++){
@@ -105,4 +119,12 @@ torch::data::Example<> myMnistDataset::get(size_t index){
 
 	return {tImage.clone(), tLabel.clone()};
 } // End of myMnistDataset::get
+
+void convertFormat(IntBuffer &buffer){
+	for(int i = 0; i < 2; i++){
+		unsigned char tmp = buffer.acData[3 - i];
+		buffer.acData[3 - i] = buffer.acData[i];
+		buffer.acData[i] = tmp;
+	} // End of for-loop
+} // End of convertFormat
 

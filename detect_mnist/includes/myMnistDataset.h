@@ -3,6 +3,7 @@
 
 #include "opencv2/core/mat.hpp"
 #include "torch/data.h"
+#include "torch/data/datasets/base.h"
 #include "torch/data/example.h"
 #include "torch/types.h"
 #include <cstddef>
@@ -11,7 +12,17 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 
-class myMnistDataset: public torch::data::Dataset<myMnistDataset>{
+union IntBuffer{
+	int iData;
+	unsigned char acData[4];
+}; // End of union Buffer
+
+/* Description: Convert the data from MSB to LSB
+ * @param buffer[in/out]: The input data
+ */
+void convertFormat(IntBuffer &buffer);
+
+class myMnistDataset: public torch::data::datasets::Dataset<myMnistDataset>{
 	// private fields
 	private:
 		std::vector<cv::Mat> m_vmImages;
@@ -23,7 +34,7 @@ class myMnistDataset: public torch::data::Dataset<myMnistDataset>{
 		 * @param sImagePath[in]: The images path
 		 * @param sLabelsPath[in]: The label file path
 		 */
-		myMnistDataset(std::string sImagePath, std::string sLabelsPath);
+		myMnistDataset(const std::string &sImagePath, const std::string &sLabelsPath);
 
 		/* Description: Get the number of the datum
 		 * @return Return the number oif the datum

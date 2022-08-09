@@ -14,6 +14,7 @@
 ### [Fixed]
 - Fixed the bug that the label file would be prepared for the image file in the consturctor of the class `myMnistDataset` for the example `detect_mnist`.
 - Fixed the bug that the program `testDataset` did not break out the while-loop during parsing arguments for the example `detect_mnist`.
+- Fixed the bug that the class `myMnistDataset` could not load the number of MNIST dataset for the example `detect_mnist`.
 
 ### [Removed]
 
