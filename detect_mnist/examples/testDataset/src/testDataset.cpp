@@ -1,5 +1,4 @@
-#include <cstring>
-#include <deque>
+#include <cstddef>
 #include <exception>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +17,9 @@
 #include "torch/types.h"
 
 struct Params{
-	std::string sImagePath;
-	std::string sLabelPath;
-	std::string sOutputDir;
+	char* pcImagePath;
+	char* pcLabelPath;
+	char* pcOutputDir;
 };
 
 /* Description: Parse the arguments from user
@@ -38,6 +37,9 @@ void convertDataset(const Params *poParam);
 
 int main(int argc, char **argv){
 	Params *poParam = (Params*)malloc(sizeof(Params));
+	poParam->pcOutputDir = NULL;
+	poParam->pcLabelPath = NULL;
+	poParam->pcImagePath = NULL;
 
 	if(0 == parseArgs(argc, argv, poParam)){
 		try {
@@ -48,6 +50,15 @@ int main(int argc, char **argv){
 	} // End of if-condition
 
 
+	free(poParam->pcImagePath);
+	poParam->pcImagePath = NULL;
+
+	free(poParam->pcLabelPath);
+	poParam->pcLabelPath = NULL;
+
+	free(poParam->pcOutputDir);
+	poParam->pcOutputDir = NULL;
+
 	free(poParam);
 	poParam = NULL;
 	return 0;
@@ -56,6 +67,9 @@ int main(int argc, char **argv){
 int parseArgs(int argc, char **argv, Params *poParam){
 	while (1) {
 		int iArg = getopt(argc, argv, "hi:a:o:");
+		if(-1 == iArg)
+			break;
+
 		switch (iArg) {
 			case 'h':
 				printf("Name:\n\ttestDataset\n\n");
@@ -67,13 +81,16 @@ int parseArgs(int argc, char **argv, Params *poParam){
 				printf("\t-o\tSet the output directry.\n");
 				return 1;
 			case 'i':
-				poParam->sImagePath = optarg;
+				poParam->pcImagePath = (char*)malloc(sizeof(char)*4096);
+				sprintf(poParam->pcImagePath, "%s", optarg);
 				break;
 			case 'a':
-				poParam->sLabelPath = optarg;
+				poParam->pcLabelPath = (char*)malloc(sizeof(char)*4096);
+				sprintf(poParam->pcLabelPath, "%s", optarg);
 				break;
 			case 'o':
-				poParam->sOutputDir = optarg;
+				poParam->pcOutputDir = (char*)malloc(sizeof(char)*4096);
+				sprintf(poParam->pcOutputDir, "%s", optarg);
 				break;
 			default:
 				printf("Error: The argument '-%c' is invalid. Please use '-h' to get the usage.\n", iArg);
@@ -86,7 +103,7 @@ int parseArgs(int argc, char **argv, Params *poParam){
 
 void convertDataset(const Params *poParam){
 	char acBuffer[4096];
-	auto poDataset = myMnistDataset(poParam->sImagePath, poParam->sLabelPath)
+	auto poDataset = myMnistDataset(poParam->pcImagePath, poParam->pcLabelPath)
 		.map(torch::data::transforms::Stack<>());
 
 	auto poDataLoader = torch::data::make_data_loader(std::move(poDataset), 
@@ -112,7 +129,7 @@ void convertDataset(const Params *poParam){
 		tLabel = tLabel.to(torch::kU8);
 		memcpy((void*)mLabel.data, (void*)tLabel.data_ptr(), sizeof(torch::kU8)*iRows*iCols);
 
-		sprintf(acBuffer, "%s/%08d_%d.bmp", poParam->sOutputDir.c_str(), index, mLabel.at<uchar>(0, 0));
+		sprintf(acBuffer, "%s/%08d_%d.bmp", poParam->pcOutputDir, index, mLabel.at<uchar>(0, 0));
 		printf("%08d: %d\r", index, mLabel.at<uchar>(0, 0));
 		cv::imwrite(acBuffer, mImage);
 		index++;
