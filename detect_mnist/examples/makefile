@@ -12,17 +12,11 @@ debug ?= 0
 
 # Compile the target file with the object files.
 all: 
-	cd ./tensorEye; $(MAKE) debug=$(debug)
-	cd ./simpleNet; $(MAKE) debug=$(debug)
-	cd ./dcgan_strurct; $(MAKE) debug=$(debug)
-	cd ./detect_mnist; $(MAKE) debug=$(debug)
+	cd ./testDataset; $(MAKE) debug=$(debug)
 
 
 # Clean all compiled files.
 clean:
-	cd ./tensorEye; $(MAKE) clean
-	cd ./simpleNet; $(MAKE) clean
-	cd ./dcgan_strurct; $(MAKE) clean
-	cd ./detect_mnist; $(MAKE) clean
+	cd ./testDataset; $(MAKE) debug=$(debug)
 
 

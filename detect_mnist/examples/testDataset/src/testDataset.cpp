@@ -65,7 +65,7 @@ int parseArgs(int argc, char **argv, Params *poParam){
 				printf("\t-i\tSet to load the image path.\n");
 				printf("\t-a\tSet to load the labels.\n");
 				printf("\t-o\tSet the output directry.\n");
-				break;
+				return 1;
 			case 'i':
 				poParam->sImagePath = optarg;
 				break;
